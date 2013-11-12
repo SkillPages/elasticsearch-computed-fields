@@ -1,5 +1,5 @@
 Computed fields plugin for ElasticSearch 
-=============================
+===========================================
 
 The computed fields plugin adds support for indexing computed(scripted) fields
 
