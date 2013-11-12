@@ -1,4 +1,157 @@
-elasticsearch-computed-fields
+Computed fields plugin for ElasticSearch 
 =============================
 
-Computed fields plugin for ElasticSearch  http://www.elasticsearch.org
+The computed fields plugin adds support for indexing computed(scripted) fields
+
+In order to install the plugin, simply run: `bin/plugin -install SkillPages/elasticsearch-computed-fields/master`.
+
+<table>
+	<thead>
+		<tr>
+			<td>Computed Fields Plugin</td>
+			<td>ElasticSearch</td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>master (1.0)</td>
+			<td>1.0.* (master)</td>
+		</tr>
+		<tr>
+			<td>master (1.0)</td>
+			<td>0.90.*</td>
+		</tr>
+	</tbody>
+</table>
+
+### Examples:
+&nbsp;
+##### CREATE INDEX:
+```javascript
+curl -XPOST localhost:9200/twitter -d '{
+    "mappings" : {
+        "tweet" : {
+            "computed_fields" : { "enabled" : true }
+        }
+    }
+}'
+```
+```javascript
+curl -XPOST localhost:9200/twitter -d '{
+    "mappings" : {
+        "tweet" : {
+            "computed_fields" : { "enabled" : true },
+            "properties" : {
+                "latitude" : { "type" : "float" },
+                "longitude" : { "type" : "float" }
+            }
+        }
+    }
+}'
+```
+```javascript
+curl -XPOST localhost:9200/twitter -d '{
+    "mappings" : {
+        "tweet" : {
+            "computed_fields" : { "enabled" : true },
+            "properties" : {
+                "latitude" : { "type" : "float" },
+                "longitude" : { "type" : "float" },
+                "point" : { 
+                    "type" : "computed", 
+                    "script" : "latitude + ',' + longitude", 
+                    "result" : {
+                        "type" : "geo_point",
+                        "store" : true
+                    }
+                }
+            }
+        }
+    }
+}'
+```
+IMPORTANT: Computed fields can not be enabled using put mapping request (they can only be enabled during index creation). This issue is caused by current limitation of elasticsearch, that dont allows adding of root field mappers during merge.
+
+&nbsp;
+##### PUT MAPPING:
+
+```javascript
+curl -XPUT localhost:9200/twitter/tweet/_mapping -d '{
+    "tweet" : {
+        "computed_fields" : { "enabled" : false },
+        "properties" : {
+            "latitude" : { "type" : "float" },
+            "longitude" : { "type" : "double" },
+            "point" : { 
+                "type" : "computed", 
+                "script" : "longitude + ',' + latitude", 
+                "result" : {
+                    "type" : "geo_point",
+                    "store" : true
+                }
+            }
+        }
+    }
+}'
+```
+```javascript
+curl -XPUT localhost:9200/twitter/tweet/_mapping -d '{
+    "tweet" : {
+        "computed_fields" : { "enabled" : true },
+        "properties" : {
+            "latitude" : { "type" : "float" },
+            "longitude" : { "type" : "float" },
+            "point" : { 
+                "type" : "computed", 
+                "script" : "latitude + ',' + longitude", 
+                "result" : {
+                    "type" : "geo_point",
+                    "store" : true
+                }
+            },
+            "test" : { "type" : "computed", "script" : "!false", "result" : { "type" : "boolean" } }
+        }
+    }
+}'
+```
+&nbsp;
+##### INDEX:
+```javascript
+curl -XPUT localhost:9200/twitter/tweet/1 -d '{
+    "latitude" : 53.3,
+    "longitude" : -6.4
+}'
+```
+```javascript
+curl -XPUT localhost:9200/twitter/tweet/2 -d '{
+    "latitude" : 53.3,
+    "longitude" : -6.4,
+    "text" : "test"
+}'
+```
+&nbsp;
+##### SEARCH:
+```javascript
+curl -XPOST localhost:9200/twitter/tweet/_search?pretty=true&fields=_source,point -d '{
+    "filter" : {
+            "geo_bounding_box" : {
+                "point" : {
+                    "top_left" : {
+                        "lat" : 54.00,
+                        "lon" : -9.00
+                    },
+                    "bottom_right" : {
+                        "lat" : 50.00,
+                        "lon" : -5.00
+                    }
+                }
+            }
+        }
+}'
+```
+NOTE: Stored computed fields may not be returned immediatelly after indexing them, it is caused by issue in elasticsearch, that it is trying to extract stored fields from _source field when document is still 'warm' in transaction log. After transaction log gets flushed, computed stored fields are returned correctly. To manually flush transaction log, issue index optimize request (test only):
+```javascript
+curl -XPOST localhost:9200/twitter/_optimize
+```
+
+
