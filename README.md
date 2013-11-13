@@ -14,11 +14,11 @@ In order to install the plugin, simply run: `bin/plugin -install SkillPages/elas
 	</thead>
 	<tbody>
 		<tr>
-			<td>master (1.0)</td>
+			<td>master (1.0 beta)</td>
 			<td>1.0.* (master)</td>
 		</tr>
 		<tr>
-			<td>master (1.0)</td>
+			<td>master (1.0 beta)</td>
 			<td>0.90.*</td>
 		</tr>
 	</tbody>
