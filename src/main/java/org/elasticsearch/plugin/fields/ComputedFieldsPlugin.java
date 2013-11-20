@@ -2,10 +2,9 @@ package org.elasticsearch.plugin.fields;
 
 import java.util.Collection;
 
+import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.plugins.AbstractPlugin;
-
-import com.google.common.collect.Lists;
 
 public final class ComputedFieldsPlugin extends AbstractPlugin
 {

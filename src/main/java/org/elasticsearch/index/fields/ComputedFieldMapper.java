@@ -117,8 +117,6 @@ public class ComputedFieldMapper implements Mapper
     @Override
     public void close()
     {
-        System.out.println(_name + ": close - " + this.hashCode());
-        
         if (_resultMapper != null) _resultMapper.close();
 
         reset();
