@@ -3,7 +3,7 @@ Computed fields plugin for ElasticSearch
 
 The computed fields plugin adds support for indexing computed(scripted) fields
 
-In order to install the plugin, simply run: `bin/plugin -install SkillPages/elasticsearch-computed-fields/master`.
+In order to install the plugin, simply run: `bin/plugin -install SkillPages/elasticsearch-computed-fields/0.0.1`.
 
 <table>
 	<thead>
@@ -14,12 +14,12 @@ In order to install the plugin, simply run: `bin/plugin -install SkillPages/elas
 	</thead>
 	<tbody>
 		<tr>
-			<td>master (1.0 beta)</td>
-			<td>1.0.* (master)</td>
+			<td>master</td>
+			<td>master</td>
 		</tr>
 		<tr>
-			<td>master (1.0 beta)</td>
-			<td>0.90.*</td>
+			<td>0.0.1</td>
+			<td>0.90.7</td>
 		</tr>
 	</tbody>
 </table>
