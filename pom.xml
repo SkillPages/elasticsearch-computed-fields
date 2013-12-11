@@ -8,6 +8,38 @@
 
 	<packaging>jar</packaging>
 
+	<name>elasticsearch-computed-fields</name>
+	<description>Adds support for indexing computed fields</description>
+	<url>https://github.com/SkillPages/elasticsearch-computed-fields</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>
+			scm:git:git@github.com:SkillPages/elasticsearch-computed-fields.git
+		</connection>
+		<developerConnection>
+			scm:git:git@github.com:SkillPages/elasticsearch-computed-fields.git
+		</developerConnection>
+		<url>
+			https://github.com/SkillPages/elasticsearch-computed-fields
+		</url>
+	</scm>
+	
+	<developers>
+		<developer>
+			<id>karol-gwaj</id>
+			<name>Karol Gwaj</name>
+			<url>https://github.com/karol-gwaj</url>
+		</developer>
+	</developers>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<elasticsearch.version>0.90.7</elasticsearch.version>
@@ -46,6 +78,21 @@
 					</excludes>
 				</configuration>
 			</plugin>
+<!-- 		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+-->			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
