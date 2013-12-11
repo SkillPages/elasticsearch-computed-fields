@@ -3,7 +3,10 @@ Computed fields plugin for ElasticSearch
 
 The computed fields plugin adds support for indexing computed(scripted) fields
 
-In order to install the plugin, simply run: `bin/plugin -u https://github.com/SkillPages/elasticsearch-computed-fields/releases/download/v0.0.1/elasticsearch-computed-fields-0.0.1.zip -i computed-fields`.
+In order to install the plugin, simply run: 
+```
+bin/plugin -i computed-fields -u https://github.com/SkillPages/elasticsearch-computed-fields/releases/download/v0.0.1/elasticsearch-computed-fields-0.0.1.zip
+```
 
 <table>
 	<thead>
