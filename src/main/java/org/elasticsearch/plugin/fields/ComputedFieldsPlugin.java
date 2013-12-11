@@ -1,11 +1,10 @@
 package org.elasticsearch.plugin.fields;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.plugins.AbstractPlugin;
-
-import com.google.common.collect.Lists;
 
 public final class ComputedFieldsPlugin extends AbstractPlugin
 {
@@ -13,7 +12,7 @@ public final class ComputedFieldsPlugin extends AbstractPlugin
     public String name()
     {
         return "computed-fields-plugin";
-    }
+    } 
 
     @Override
     public String description()
@@ -24,7 +23,7 @@ public final class ComputedFieldsPlugin extends AbstractPlugin
     @Override
     public Collection<Class<? extends Module>> indexModules() 
     {
-        Collection<Class<? extends Module>> modules = Lists.newArrayList();
+        Collection<Class<? extends Module>> modules = new ArrayList<Class<? extends Module>>();
         modules.add(ComputedFieldsModule.class);
         return modules;
     }
