@@ -57,7 +57,7 @@ curl -XPOST localhost:9200/twitter -d '{
             "properties" : {
                 "latitude" : { "type" : "float" },
                 "longitude" : { "type" : "float" },
-                "point" : { 
+                "@point" : { 
                     "type" : "computed", 
                     "script" : "latitude + ',' + longitude", 
                     "result" : {
@@ -82,7 +82,7 @@ curl -XPUT localhost:9200/twitter/tweet/_mapping -d '{
         "properties" : {
             "latitude" : { "type" : "float" },
             "longitude" : { "type" : "double" },
-            "point" : { 
+            "@point" : { 
                 "type" : "computed", 
                 "script" : "longitude + ',' + latitude", 
                 "result" : {
@@ -101,7 +101,7 @@ curl -XPUT localhost:9200/twitter/tweet/_mapping -d '{
         "properties" : {
             "latitude" : { "type" : "float" },
             "longitude" : { "type" : "float" },
-            "point" : { 
+            "@point" : { 
                 "type" : "computed", 
                 "script" : "latitude + ',' + longitude", 
                 "result" : {
@@ -109,7 +109,7 @@ curl -XPUT localhost:9200/twitter/tweet/_mapping -d '{
                     "store" : true
                 }
             },
-            "test" : { "type" : "computed", "script" : "!false", "result" : { "type" : "boolean" } }
+            "@test" : { "type" : "computed", "script" : "!false", "result" : { "type" : "boolean" } }
         }
     }
 }'
@@ -132,10 +132,10 @@ curl -XPUT localhost:9200/twitter/tweet/2 -d '{
 &nbsp;
 ##### SEARCH:
 ```javascript
-curl -XPOST localhost:9200/twitter/tweet/_search?pretty=true&fields=_source,point -d '{
+curl -XPOST localhost:9200/twitter/tweet/_search?pretty=true&fields=_source,@point -d '{
     "filter" : {
             "geo_bounding_box" : {
-                "point" : {
+                "@point" : {
                     "top_left" : {
                         "lat" : 54.00,
                         "lon" : -9.00
