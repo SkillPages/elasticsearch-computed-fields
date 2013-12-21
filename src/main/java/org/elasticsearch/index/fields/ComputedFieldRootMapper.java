@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
@@ -20,6 +22,10 @@ public class ComputedFieldRootMapper implements RootMapper
     private boolean _enabled;
     private List<ComputedFieldMapper> _children;
     private Integer _contentBuilderHash;
+   
+    private final ReentrantReadWriteLock _lock = new ReentrantReadWriteLock();
+    private final Lock _readLock = _lock.readLock();
+    private final Lock _writeLock = _lock.writeLock();
     
     protected ComputedFieldRootMapper(String name, Map<String, Object> mappings)
     {
@@ -71,22 +77,38 @@ public class ComputedFieldRootMapper implements RootMapper
             
             if (_children != null)
             {
-                for (ComputedFieldMapper child : _children)
+                _readLock.lock();
+                try
                 {
-                    boolean deleted = true;
-                    if (m._children != null)
+                    for (ComputedFieldMapper child : _children)
                     {
-                        for (ComputedFieldMapper child2 : m._children)
+                        boolean deleted = true;
+                        if (m._children != null)
                         {
-                            if (child.name() == child2.name())
+                            m._readLock.lock();
+                            try
                             {
-                                deleted = false;
-                                break;
+                                for (ComputedFieldMapper child2 : m._children)
+                                {
+                                    if (child.name() == child2.name())
+                                    {
+                                        deleted = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            finally
+                            {
+                                m._readLock.unlock();
                             }
                         }
+                        
+                        child.deleted(deleted);
                     }
-                    
-                    child.deleted(deleted);
+                }
+                finally
+                {
+                    _readLock.unlock();                   
                 }
             }
             
@@ -122,10 +144,19 @@ public class ComputedFieldRootMapper implements RootMapper
         if (!_enabled) return;
         if (_children == null) return;
         
-        Map<String, Object> vars = new ScriptParametersWrapper(context.doc(), context.docMapper());        
-        for (ComputedFieldMapper child : _children)
+        Map<String, Object> vars = new ScriptParametersWrapper(context.doc(), context.docMapper());    
+        
+        _readLock.lock();
+        try
+        {        
+            for (ComputedFieldMapper child : _children)
+            {
+                child.execute(context, vars);
+            }
+        }
+        finally
         {
-            child.execute(context, vars);
+            _readLock.unlock();
         }
     }
 
@@ -147,19 +178,35 @@ public class ComputedFieldRootMapper implements RootMapper
     
     public void addChild(ComputedFieldMapper computedFieldMapper)
     {
-        if (_children == null)
-            _children = new ArrayList<ComputedFieldMapper>();
-        
-        _children.add(computedFieldMapper);
-        computedFieldMapper.root(this);
+        _writeLock.lock();
+        try
+        {
+            if (_children == null)
+                _children = new ArrayList<ComputedFieldMapper>();
+
+            _children.add(computedFieldMapper);
+            computedFieldMapper.root(this);
+        }
+        finally
+        {
+            _writeLock.unlock();
+        }
     }
     
     public void removeChild(ComputedFieldMapper computedFieldMapper)
     {
         if (_children == null) return;
         
-        _children.remove(computedFieldMapper);
-        computedFieldMapper.root(null);
+        _writeLock.lock();
+        try
+        {
+            _children.remove(computedFieldMapper);
+            computedFieldMapper.root(null);
+        }
+        finally
+        {
+            _writeLock.unlock();
+        }
         
         if (_children.size() == 0) reset();
     }

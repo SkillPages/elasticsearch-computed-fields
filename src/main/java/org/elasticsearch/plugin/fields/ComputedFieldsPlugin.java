@@ -11,7 +11,7 @@ public final class ComputedFieldsPlugin extends AbstractPlugin
     @Override
     public String name()
     {
-        return "computed-fields-plugin";
+        return "computed-fields";
     } 
 
     @Override

@@ -1,7 +1,7 @@
 cluster.name: elasticsearch-debug
 node.name: "test"
 
-plugin.mandatory: computed-fields-plugin
+plugin.mandatory: computed-fields
 
 index.number_of_shards: 1
 index.number_of_replicas: 0
