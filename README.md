@@ -21,12 +21,12 @@ bin/plugin -i computed-fields -u https://github.com/SkillPages/elasticsearch-com
 			<td>master</td>
 		</tr>
 		<tr>
-			<td>0.0.1</td>
-			<td>0.90.7</td>
-		</tr>
-		<tr>
 			<td>0.0.2</td>
 			<td>0.90.9</td>
+		</tr>
+		<tr>
+			<td>0.0.1</td>
+			<td>0.90.7</td>
 		</tr>
 	</tbody>
 </table>
