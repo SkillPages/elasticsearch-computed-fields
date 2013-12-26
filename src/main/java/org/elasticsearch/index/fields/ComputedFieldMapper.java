@@ -160,8 +160,7 @@ public class ComputedFieldMapper implements Mapper
             {
                 GeoPointFieldMapper gfm = (GeoPointFieldMapper)_resultMapper;
                 
-                FieldMapper<?> fm = gfm.stringMapper();
-                if (fm == null) fm = gfm.geoHashStringMapper();
+                FieldMapper<?> fm = gfm.geoHashStringMapper();
                 if (fm == null) fm = gfm.latMapper();
                 
                 if (fm != null)

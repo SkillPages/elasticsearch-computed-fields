@@ -4,13 +4,19 @@
 
 	<groupId>org.elasticsearch</groupId>
 	<artifactId>elasticsearch-computed-fields</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 
 	<packaging>jar</packaging>
 
 	<name>elasticsearch-computed-fields</name>
 	<description>Adds support for indexing computed fields</description>
 	<url>https://github.com/SkillPages/elasticsearch-computed-fields</url>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<elasticsearch.version>0.90.9</elasticsearch.version>
+		<java.version>1.6</java.version>
+	</properties>
 
 	<licenses>
 		<license>
@@ -39,12 +45,6 @@
 			<url>https://github.com/karol-gwaj</url>
 		</developer>
 	</developers>
-	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>0.90.7</elasticsearch.version>
-		<java.version>1.6</java.version>
-	</properties>
 
 	<dependencies>
 		<dependency>

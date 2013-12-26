@@ -69,11 +69,8 @@ public final class ScriptParametersWrapper implements Map<String, Object>
             }
             else if (mapper instanceof GeoPointFieldMapper)
             {
-                GeoPointFieldMapper gfm = (GeoPointFieldMapper)mapper;
-                
-                FieldMapper<?> fm = gfm.stringMapper();
-                if (fm == null) fm = gfm.geoHashStringMapper();
-                
+                GeoPointFieldMapper gfm = (GeoPointFieldMapper)mapper;               
+                FieldMapper<?> fm = gfm.geoHashStringMapper();                
                 if (fm != null) value = fm.value(value);
             }
         }
