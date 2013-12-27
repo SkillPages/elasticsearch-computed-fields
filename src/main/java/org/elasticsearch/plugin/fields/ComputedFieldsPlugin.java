@@ -3,11 +3,20 @@ package org.elasticsearch.plugin.fields;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.helpers.fields.SettingsHelper;
 import org.elasticsearch.plugins.AbstractPlugin;
 
 public final class ComputedFieldsPlugin extends AbstractPlugin
 {
+    @Inject  
+    public ComputedFieldsPlugin(Settings settings)
+    {
+        SettingsHelper.SetSettings(settings);
+    }
+    
     @Override
     public String name()
     {

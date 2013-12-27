@@ -8,8 +8,11 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
+import org.elasticsearch.helpers.fields.SettingsHelper;
 import org.elasticsearch.index.mapper.*;
 
 public class ComputedFieldRootMapper implements RootMapper
@@ -26,9 +29,12 @@ public class ComputedFieldRootMapper implements RootMapper
     private final ReentrantReadWriteLock _lock = new ReentrantReadWriteLock();
     private final Lock _readLock = _lock.readLock();
     private final Lock _writeLock = _lock.writeLock();
+    private final ESLogger _logger; 
     
     protected ComputedFieldRootMapper(String name, Map<String, Object> mappings)
     {
+        _logger = Loggers.getLogger("computed-fields", SettingsHelper.GetSettings(), name);
+
         _name = name;
         _mappings = mappings;
         
@@ -44,21 +50,30 @@ public class ComputedFieldRootMapper implements RootMapper
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException
     {
-        if (_children == null)
+        try
         {
-            synchronized(RootMappers)
+            if (_children == null)
             {
-                if (_children == null)
-                {                
-                    _contentBuilderHash = System.identityHashCode(builder);
-                    RootMappers.put(_contentBuilderHash, this);
-                    _children = new ArrayList<ComputedFieldMapper>();
+                synchronized(RootMappers)
+                {
+                    if (_children == null)
+                    {                
+                        _contentBuilderHash = System.identityHashCode(builder);
+                        RootMappers.put(_contentBuilderHash, this);
+                        _children = new ArrayList<ComputedFieldMapper>();
+                    }
                 }
             }
+            
+            builder.field(_name, _mappings);
+            return builder;
         }
-        
-        builder.field(_name, _mappings);
-        return builder;
+        catch (Throwable ex)
+        {
+            _logger.error("root mapper toXContent", ex);
+            if (ex instanceof RuntimeException) throw (RuntimeException)ex;
+            else throw new RuntimeException(ex);
+        }
     }
 
     @Override
@@ -69,52 +84,61 @@ public class ComputedFieldRootMapper implements RootMapper
     @Override
     public void merge(Mapper mergeWith, MergeContext mergeContext) throws MergeMappingException
     {
-        ComputedFieldRootMapper m = (ComputedFieldRootMapper)mergeWith;
-        if (!mergeContext.mergeFlags().simulate())
+        try
         {
-            _mappings = m._mappings;
-            _enabled = m._enabled;
-            
-            if (_children != null)
+            ComputedFieldRootMapper m = (ComputedFieldRootMapper)mergeWith;
+            if (!mergeContext.mergeFlags().simulate())
             {
-                _readLock.lock();
-                try
+                _mappings = m._mappings;
+                _enabled = m._enabled;
+                
+                if (_children != null)
                 {
-                    for (ComputedFieldMapper child : _children)
+                    _readLock.lock();
+                    try
                     {
-                        boolean deleted = true;
-                        if (m._children != null)
+                        for (ComputedFieldMapper child : _children)
                         {
-                            m._readLock.lock();
-                            try
+                            boolean deleted = true;
+                            if (m._children != null)
                             {
-                                for (ComputedFieldMapper child2 : m._children)
+                                m._readLock.lock();
+                                try
                                 {
-                                    if (child.name() == child2.name())
+                                    for (ComputedFieldMapper child2 : m._children)
                                     {
-                                        deleted = false;
-                                        break;
+                                        if (child.name() == child2.name())
+                                        {
+                                            deleted = false;
+                                            break;
+                                        }
                                     }
                                 }
+                                finally
+                                {
+                                    m._readLock.unlock();
+                                }
                             }
-                            finally
-                            {
-                                m._readLock.unlock();
-                            }
+                            
+                            child.deleted(deleted);
                         }
-                        
-                        child.deleted(deleted);
+                    }
+                    finally
+                    {
+                        _readLock.unlock();                   
                     }
                 }
-                finally
-                {
-                    _readLock.unlock();                   
-                }
+                
+                reset();
             }
-            
-            reset();
+            m.close();
         }
-        m.close();
+        catch (Throwable ex)
+        {
+            _logger.error("root mapper merge", ex);
+            if (ex instanceof RuntimeException) throw (RuntimeException)ex;
+            else throw new RuntimeException(ex);
+        }
     }
 
     @Override
@@ -141,22 +165,31 @@ public class ComputedFieldRootMapper implements RootMapper
     @Override
     public void postParse(ParseContext context) throws IOException
     {
-        if (!_enabled) return;
-        if (_children == null) return;
-        
-        Map<String, Object> vars = new ScriptParametersWrapper(context.doc(), context.docMapper());    
-        
-        _readLock.lock();
         try
-        {        
-            for (ComputedFieldMapper child : _children)
+        {
+            if (!_enabled) return;
+            if (_children == null) return;
+            
+            Map<String, Object> vars = new ScriptParametersWrapper(context.doc(), context.docMapper());    
+            
+            _readLock.lock();
+            try
+            {        
+                for (ComputedFieldMapper child : _children)
+                {
+                    child.execute(context, vars);
+                }
+            }
+            finally
             {
-                child.execute(context, vars);
+                _readLock.unlock();
             }
         }
-        finally
+        catch (Throwable ex)
         {
-            _readLock.unlock();
+            _logger.error("root mapper postParse", ex);
+            if (ex instanceof RuntimeException) throw (RuntimeException)ex;
+            else throw new RuntimeException(ex);
         }
     }
 

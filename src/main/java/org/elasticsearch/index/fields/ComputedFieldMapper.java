@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.lucene.document.FieldType;
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
+import org.elasticsearch.helpers.fields.SettingsHelper;
 import org.elasticsearch.index.mapper.*;
 import org.elasticsearch.index.mapper.core.*;
 import org.elasticsearch.index.mapper.geo.GeoPointFieldMapper;
@@ -25,9 +28,12 @@ public class ComputedFieldMapper implements Mapper
     private boolean _deleted;
     
     private ComputedFieldRootMapper _root;
+    private final ESLogger _logger;
     
     protected ComputedFieldMapper(String name, ScriptService scriptService, Map<String, Object> mappings, Mapper resultMapper)
     {
+        _logger = Loggers.getLogger("computed-fields", SettingsHelper.GetSettings(), name);
+        
         _name = name;
         _scriptService = scriptService;
         _mappings = mappings;     
@@ -84,29 +90,47 @@ public class ComputedFieldMapper implements Mapper
     @Override
     public void merge(Mapper mergeWith, MergeContext mergeContext) throws MergeMappingException
     {
-        ComputedFieldMapper m = (ComputedFieldMapper)mergeWith;
-        if (!mergeContext.mergeFlags().simulate())
+        try
         {
-            _mappings = m._mappings;
-            Mapper mm = _resultMapper;
-            _resultMapper = m._resultMapper;
-            m._resultMapper = mm;
-            _script = m._script;
-            _externalValueSupported = m._externalValueSupported;
-            _deleted = m._deleted;
-            
-            reset();           
+            ComputedFieldMapper m = (ComputedFieldMapper)mergeWith;
+            if (!mergeContext.mergeFlags().simulate())
+            {
+                _mappings = m._mappings;
+                Mapper mm = _resultMapper;
+                _resultMapper = m._resultMapper;
+                m._resultMapper = mm;
+                _script = m._script;
+                _externalValueSupported = m._externalValueSupported;
+                _deleted = m._deleted;
+                
+                reset();           
+            }
+            m.close();
         }
-        m.close();
+        catch (Throwable ex)
+        {
+            _logger.error("field mapper merge", ex);
+            if (ex instanceof RuntimeException) throw (RuntimeException)ex;
+            else throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public void traverse(FieldMapperListener fieldMapperListener)
     {
-        if (_resultMapper == null) return;
-        if (_deleted) return;
-             
-        _resultMapper.traverse(fieldMapperListener);
+        try
+        {
+            if (_resultMapper == null) return;
+            if (_deleted) return;
+                 
+            _resultMapper.traverse(fieldMapperListener);
+        }
+        catch (Throwable ex)
+        {
+            _logger.error("field mapper traverse", ex);
+            if (ex instanceof RuntimeException) throw (RuntimeException)ex;
+            else throw new RuntimeException(ex);
+        }
     }
 
     @Override
@@ -117,9 +141,18 @@ public class ComputedFieldMapper implements Mapper
     @Override
     public void close()
     {
-        if (_resultMapper != null) _resultMapper.close();
-
-        reset();
+        try
+        {
+            if (_resultMapper != null) _resultMapper.close();
+    
+            reset();
+        }
+        catch (Throwable ex)
+        {
+            _logger.error("field mapper close", ex);
+            if (ex instanceof RuntimeException) throw (RuntimeException)ex;
+            else throw new RuntimeException(ex);
+        }
     }
     
     public void reset()
@@ -135,49 +168,58 @@ public class ComputedFieldMapper implements Mapper
     
     public void execute(ParseContext context, Map<String, Object> vars) throws IOException
     {
-        if (!enabled()) return;
+        try
+        {
+            if (!enabled()) return;
+    
+            Object value =_scriptService.execute(_script, vars);
+            if (value == null) return;
 
-        Object value =_scriptService.execute(_script, vars);
-        if (value == null) return;
-        
-        if (_externalValueSupported)
-        {
-            context.externalValue(value);
-            _resultMapper.parse(context);
-        }
-        else
-        {
-            FieldType fieldType = AbstractFieldMapper.Defaults.FIELD_TYPE;
-            float boost = 1.0f;
-            if (_resultMapper instanceof FieldMapper<?>) 
+            if (_externalValueSupported)
             {
-                FieldMapper<?> fm = (FieldMapper<?>)_resultMapper;
-                value = fm.value(value);
-                fieldType = fm.fieldType();
-                boost = fm.boost();
+                context.externalValue(value);
+                _resultMapper.parse(context);
             }
-            else if (_resultMapper instanceof GeoPointFieldMapper)
+            else
             {
-                GeoPointFieldMapper gfm = (GeoPointFieldMapper)_resultMapper;
-                
-                FieldMapper<?> fm = gfm.geoHashStringMapper();
-                if (fm == null) fm = gfm.latMapper();
-                
-                if (fm != null)
+                FieldType fieldType = AbstractFieldMapper.Defaults.FIELD_TYPE;
+                float boost = 1.0f;
+                if (_resultMapper instanceof FieldMapper<?>) 
                 {
+                    FieldMapper<?> fm = (FieldMapper<?>)_resultMapper;
                     value = fm.value(value);
                     fieldType = fm.fieldType();
-                    boost = fm.boost();             
+                    boost = fm.boost();
                 }
-                else
+                else if (_resultMapper instanceof GeoPointFieldMapper)
                 {
-                    fieldType = GeoPointFieldMapper.Defaults.FIELD_TYPE;              
-                }                   
+                    GeoPointFieldMapper gfm = (GeoPointFieldMapper)_resultMapper;
+                    
+                    FieldMapper<?> fm = gfm.geoHashStringMapper();
+                    if (fm == null) fm = gfm.latMapper();
+                    
+                    if (fm != null)
+                    {
+                        value = fm.value(value);
+                        fieldType = fm.fieldType();
+                        boost = fm.boost();             
+                    }
+                    else
+                    {
+                        fieldType = GeoPointFieldMapper.Defaults.FIELD_TYPE;              
+                    }                   
+                }
+                
+                ComputedField field = new ComputedField(_name, value, fieldType);
+                field.setBoost(boost);
+                context.doc().add(field);            
             }
-            
-            ComputedField field = new ComputedField(_name, value, fieldType);
-            field.setBoost(boost);
-            context.doc().add(field);            
+        }
+        catch (Throwable ex)
+        {
+            _logger.error("field mapper execute", ex);
+            if (ex instanceof RuntimeException) throw (RuntimeException)ex;
+            else throw new RuntimeException(ex);
         }
     }
     
