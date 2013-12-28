@@ -9,7 +9,6 @@ import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.Mapper;
-import org.elasticsearch.index.mapper.geo.GeoPointFieldMapper;
 
 public final class ScriptParametersWrapper implements Map<String, Object>
 {
@@ -66,12 +65,6 @@ public final class ScriptParametersWrapper implements Map<String, Object>
             {
                 FieldMapper<?> fm = (FieldMapper<?>)mapper;
                 value = fm.value(value);
-            }
-            else if (mapper instanceof GeoPointFieldMapper)
-            {
-                GeoPointFieldMapper gfm = (GeoPointFieldMapper)mapper;               
-                FieldMapper<?> fm = gfm.geoHashStringMapper();                
-                if (fm != null) value = fm.value(value);
             }
         }
                

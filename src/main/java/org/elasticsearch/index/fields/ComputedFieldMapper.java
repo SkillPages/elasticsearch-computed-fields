@@ -8,10 +8,10 @@ import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
+import org.elasticsearch.helpers.fields.CompletionFieldHelper;
 import org.elasticsearch.helpers.fields.SettingsHelper;
 import org.elasticsearch.index.mapper.*;
 import org.elasticsearch.index.mapper.core.*;
-import org.elasticsearch.index.mapper.geo.GeoPointFieldMapper;
 import org.elasticsearch.index.mapper.ip.IpFieldMapper;
 import org.elasticsearch.script.CompiledScript;
 import org.elasticsearch.script.ScriptService;
@@ -184,30 +184,19 @@ public class ComputedFieldMapper implements Mapper
             {
                 FieldType fieldType = AbstractFieldMapper.Defaults.FIELD_TYPE;
                 float boost = 1.0f;
-                if (_resultMapper instanceof FieldMapper<?>) 
+
+                if (_resultMapper instanceof CompletionFieldMapper)
+                {
+                    CompletionFieldMapper cfm = (CompletionFieldMapper)_resultMapper;
+                    CompletionFieldHelper.parse(cfm.value(value), cfm, context.doc());
+                    return;            
+                }
+                else if (_resultMapper instanceof FieldMapper<?>) 
                 {
                     FieldMapper<?> fm = (FieldMapper<?>)_resultMapper;
                     value = fm.value(value);
                     fieldType = fm.fieldType();
                     boost = fm.boost();
-                }
-                else if (_resultMapper instanceof GeoPointFieldMapper)
-                {
-                    GeoPointFieldMapper gfm = (GeoPointFieldMapper)_resultMapper;
-                    
-                    FieldMapper<?> fm = gfm.geoHashStringMapper();
-                    if (fm == null) fm = gfm.latMapper();
-                    
-                    if (fm != null)
-                    {
-                        value = fm.value(value);
-                        fieldType = fm.fieldType();
-                        boost = fm.boost();             
-                    }
-                    else
-                    {
-                        fieldType = GeoPointFieldMapper.Defaults.FIELD_TYPE;              
-                    }                   
                 }
                 
                 ComputedField field = new ComputedField(_name, value, fieldType);
