@@ -1,6 +1,7 @@
 package org.elasticsearch.helpers.fields;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -14,8 +15,6 @@ import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.mapper.MapperException;
 import org.elasticsearch.index.mapper.core.CompletionFieldMapper;
 import org.elasticsearch.index.mapper.core.CompletionFieldMapper.Fields;
-
-import com.google.common.collect.Lists;
 
 public final class CompletionFieldHelper
 {
@@ -38,7 +37,7 @@ public final class CompletionFieldHelper
         String surfaceForm = null;
         BytesRef payload = null;
         long weight = -1;
-        List<String> inputs = Lists.newArrayListWithExpectedSize(4);
+        List<String> inputs = new ArrayList<String>(4);
 
         if (token == XContentParser.Token.VALUE_STRING)
         {
