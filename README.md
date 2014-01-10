@@ -125,7 +125,7 @@ curl -XPUT localhost:9200/twitter/tweet/_mapping -d '{
             	    "id" : 2
             	}
             ]
-            "@test" : { "type" : "computed", "doc['list.id'].values[1].toString() + doc['list.id'].value.toString()" , "result" : { "type" : "string" } }
+            "@test" : { "type" : "computed", "script" : "doc['list.id'].values[1].toString() + doc['list.id'].value.toString()", "result" : { "type" : "string" } }
         }
     }
 }'
