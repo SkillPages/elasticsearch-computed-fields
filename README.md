@@ -116,7 +116,16 @@ curl -XPUT localhost:9200/twitter/tweet/_mapping -d '{
                     "store" : true
                 }
             },
-            "@test" : { "type" : "computed", "script" : "!false", "result" : { "type" : "boolean" } }
+            "list" : 
+            [
+            	{
+            	    "id" : 1 
+            	},
+            	{
+            	    "id" : 2
+            	}
+            ]
+            "@test" : { "type" : "computed", "doc['list.id'].values[1].toString() + doc['list.id'].value.toString()" : "!false", "result" : { "type" : "string" } }
         }
     }
 }'
