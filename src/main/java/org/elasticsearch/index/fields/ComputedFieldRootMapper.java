@@ -170,7 +170,7 @@ public class ComputedFieldRootMapper implements RootMapper
             if (!_enabled) return;
             if (_children == null) return;
             
-            Map<String, Object> vars = new ScriptParametersWrapper(context.doc(), context.docMapper());    
+            Map<String, Object> vars = new DocumentParametersWrapper(context.doc(), context.docMapper());    
             
             _readLock.lock();
             try

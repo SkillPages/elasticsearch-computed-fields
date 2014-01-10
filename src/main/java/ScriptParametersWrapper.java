@@ -1,4 +1,4 @@
-package org.elasticsearch.index.fields;
+
 
 import java.util.Collection;
 import java.util.Map;
