@@ -169,9 +169,9 @@ curl -XPOST localhost:9200/twitter/tweet/_search?pretty=true&fields=_source,@poi
         }
 }'
 ```
-NOTE: Stored computed fields may not be returned immediatelly after indexing them, it is caused by issue in elasticsearch, that it is trying to extract stored fields from _source field when document is still 'warm' in transaction log. After transaction log gets flushed, computed stored fields are returned correctly. To manually flush transaction log, issue index optimize request (test only):
+NOTE: Stored computed fields may not be returned immediatelly after indexing them, it is caused by issue in elasticsearch, that it is trying to extract stored fields from _source field when document is still 'warm' in transaction log. After transaction log gets flushed, computed stored fields are returned correctly. To manually flush transaction log, issue index flush request (test only):
 ```javascript
-curl -XPOST localhost:9200/twitter/_optimize
+curl -XPOST localhost:9200/twitter/_flush
 ```
 
 
