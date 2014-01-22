@@ -12,9 +12,9 @@
 	<description>Adds support for indexing computed fields</description>
 	<url>https://github.com/SkillPages/elasticsearch-computed-fields</url>
 	
-	<properties>
+	<properties> 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>0.90.9</elasticsearch.version>
+		<elasticsearch.version>1.0.0</elasticsearch.version>
 		<java.version>1.6</java.version>
 	</properties>
 
@@ -46,14 +46,6 @@
 		</developer>
 	</developers>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>${elasticsearch.version}</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -117,4 +109,11 @@
 		</plugins>
 	</build>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
 </project>

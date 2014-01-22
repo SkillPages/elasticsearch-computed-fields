@@ -1,8 +1,8 @@
 package org.elasticsearch.index.fields;
 
 
-import org.apache.lucene.document.Document;
 import org.elasticsearch.index.mapper.DocumentMapper;
+import org.elasticsearch.index.mapper.ParseContext.Document;
 import org.elasticsearch.index.mapper.object.ObjectMapper;
 
 public final class FieldParametersWrapper extends BaseScriptParametersWrapper

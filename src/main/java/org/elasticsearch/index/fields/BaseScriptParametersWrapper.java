@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.elasticsearch.index.mapper.DocumentMapper;
 import org.elasticsearch.index.mapper.FieldMapper;
 import org.elasticsearch.index.mapper.FieldMappers;
+import org.elasticsearch.index.mapper.ParseContext.Document;
 
 public abstract class BaseScriptParametersWrapper implements Map<String, Object>
 {
