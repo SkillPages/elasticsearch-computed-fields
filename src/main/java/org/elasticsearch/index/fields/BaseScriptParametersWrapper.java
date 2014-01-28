@@ -61,7 +61,7 @@ public abstract class BaseScriptParametersWrapper implements Map<String, Object>
             if ((mappers != null) && !mappers.isEmpty())
             {
                 FieldMapper<?> mapper = mappers.mapper();
-                mapper.value(value);
+                value = mapper.value(value);
             }
                    
             return value;
@@ -77,7 +77,14 @@ public abstract class BaseScriptParametersWrapper implements Map<String, Object>
     @Override
     public boolean containsKey(Object key)
     {
-        return true;
+        if ("doc".equals(key)) return true;
+        if ("_source".equals(key)) return true;
+        
+        String path = path();
+        if (path == null) path = (String)key;
+        else path = path + "." + (String)key;
+
+        return mapper().mappers().fullName(path) != null;
     }
 
     @Override

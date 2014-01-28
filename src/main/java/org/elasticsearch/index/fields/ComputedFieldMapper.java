@@ -171,7 +171,7 @@ public class ComputedFieldMapper implements Mapper
         try
         {
             if (!enabled()) return;
-    
+            
             Object value =_scriptService.execute(_script, vars);
             if (value == null) return;
 
