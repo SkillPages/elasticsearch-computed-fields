@@ -12,6 +12,7 @@ import org.elasticsearch.helpers.fields.CompletionFieldHelper;
 import org.elasticsearch.helpers.fields.SettingsHelper;
 import org.elasticsearch.index.mapper.*;
 import org.elasticsearch.index.mapper.core.*;
+import org.elasticsearch.index.mapper.geo.GeoPointFieldMapper;
 import org.elasticsearch.index.mapper.ip.IpFieldMapper;
 import org.elasticsearch.script.CompiledScript;
 import org.elasticsearch.script.ScriptService;
@@ -179,6 +180,12 @@ public class ComputedFieldMapper implements Mapper
             {
                 context.externalValue(value);
                 _resultMapper.parse(context);
+            }
+            else if (_resultMapper instanceof GeoPointFieldMapper)
+            {
+                ParseContextWrapper wrapper = new ParseContextWrapper(context);
+                wrapper.reset(value);
+                _resultMapper.parse(wrapper);
             }
             else
             {
