@@ -113,7 +113,7 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>1.0.1</version>
+			<version>${elasticsearch.version}</version>
 		</dependency>
 	</dependencies>
 </project>

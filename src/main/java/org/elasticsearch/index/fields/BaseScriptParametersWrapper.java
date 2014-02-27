@@ -27,7 +27,7 @@ public abstract class BaseScriptParametersWrapper implements Map<String, Object>
         if (returnFieldData())
         {
             IndexableField[] fields = doc().getFields(path);
-            if ((fields == null) || (fields.length == 0)) return null;
+            if ((fields == null) || (fields.length == 0)) return new FieldData();
     
             FieldMapper<?> fm = null;
             
