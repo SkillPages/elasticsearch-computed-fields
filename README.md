@@ -22,7 +22,7 @@ bin/plugin -i computed-fields -u https://github.com/SkillPages/elasticsearch-com
 		</tr>
 		<tr>
 			<td>0.0.4</td>
-			<td>1.0.0,1.1.0
+			<td>1.0.0, 1.1.0
 		</tr>
 		<tr>
 			<td>0.0.3</td>
