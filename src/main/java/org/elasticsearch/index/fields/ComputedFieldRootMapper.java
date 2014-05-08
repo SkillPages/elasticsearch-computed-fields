@@ -167,14 +167,14 @@ public class ComputedFieldRootMapper implements RootMapper
     {
         try
         {
-            if (!_enabled) return;
-            if (_children == null) return;
-            
-            Map<String, Object> vars = new DocumentParametersWrapper(context.doc(), context.docMapper());    
-            
             _readLock.lock();
             try
             {        
+                if (!_enabled) return;
+                if (_children == null) return;
+            
+                Map<String, Object> vars = new DocumentParametersWrapper(context.doc(), context.docMapper());    
+            
                 for (ComputedFieldMapper child : _children)
                 {
                     child.execute(context, vars);
