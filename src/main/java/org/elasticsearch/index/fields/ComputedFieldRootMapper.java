@@ -97,31 +97,37 @@ public class ComputedFieldRootMapper implements RootMapper
                     _readLock.lock();
                     try
                     {
-                        for (ComputedFieldMapper child : _children)
-                        {
-                            boolean deleted = true;
-                            if (m._children != null)
-                            {
-                                m._readLock.lock();
-                                try
-                                {
-                                    for (ComputedFieldMapper child2 : m._children)
-                                    {
-                                        if (child.name() == child2.name())
-                                        {
-                                            deleted = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                finally
-                                {
-                                    m._readLock.unlock();
-                                }
-                            }
-                            
-                            child.deleted(deleted);
-                        }
+                    	if (_children != null)
+                    	{
+	                        for (ComputedFieldMapper child : _children)
+	                        {
+	                            boolean deleted = true;
+	                            if (m._children != null)
+	                            {
+	                                m._readLock.lock();
+	                                try
+	                                {
+	                                	if (_children != null)
+	                                	{
+		                                    for (ComputedFieldMapper child2 : m._children)
+		                                    {
+		                                        if (child.name() == child2.name())
+		                                        {
+		                                            deleted = false;
+		                                            break;
+		                                        }
+		                                    }
+	                                	}
+	                                }
+	                                finally
+	                                {
+	                                    m._readLock.unlock();
+	                                }
+	                            }
+	                            
+	                            child.deleted(deleted);
+	                        }
+                    	}
                     }
                     finally
                     {
@@ -174,11 +180,14 @@ public class ComputedFieldRootMapper implements RootMapper
             
             _readLock.lock();
             try
-            {        
-                for (ComputedFieldMapper child : _children)
-                {
-                    child.execute(context, vars);
-                }
+            {      
+            	if (_children != null)
+            	{
+	                for (ComputedFieldMapper child : _children)
+	                {
+	                    child.execute(context, vars);
+	                }
+            	}
             }
             finally
             {
@@ -233,15 +242,18 @@ public class ComputedFieldRootMapper implements RootMapper
         _writeLock.lock();
         try
         {
-            _children.remove(computedFieldMapper);
-            computedFieldMapper.root(null);
+        	if (_children != null)
+        	{
+	            _children.remove(computedFieldMapper);
+	            computedFieldMapper.root(null);
+        	}
         }
         finally
         {
             _writeLock.unlock();
         }
         
-        if (_children.size() == 0) reset();
+        if ((_children != null) && (_children.size() == 0)) reset();
     }
     
     public void reset()
