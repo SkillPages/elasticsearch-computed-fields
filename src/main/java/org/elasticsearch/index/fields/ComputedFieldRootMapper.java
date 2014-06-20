@@ -40,7 +40,7 @@ public class ComputedFieldRootMapper implements RootMapper
         
         _enabled = XContentMapValues.nodeBooleanValue(mappings.get("enabled"), false);
     }
-    
+
     @Override
     public String name()
     {
@@ -200,11 +200,6 @@ public class ComputedFieldRootMapper implements RootMapper
             if (ex instanceof RuntimeException) throw (RuntimeException)ex;
             else throw new RuntimeException(ex);
         }
-    }
-
-    @Override
-    public void validate(ParseContext context) throws MapperParsingException
-    {
     }
 
     @Override
