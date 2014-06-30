@@ -203,11 +203,6 @@ public class ComputedFieldRootMapper implements RootMapper
     }
 
     @Override
-    public void validate(ParseContext context) throws MapperParsingException
-    {
-    }
-
-    @Override
     public boolean includeInObject()
     {
         return false;

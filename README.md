@@ -5,7 +5,7 @@ The computed fields plugin adds support for indexing computed(scripted) fields
 
 In order to install the plugin, simply run: 
 ```
-bin/plugin -i computed-fields -u https://github.com/SkillPages/elasticsearch-computed-fields/releases/download/v0.0.4/elasticsearch-computed-fields-0.0.4.zip
+bin/plugin -i computed-fields -u https://github.com/SkillPages/elasticsearch-computed-fields/releases/download/v0.0.5/elasticsearch-computed-fields-0.0.5.zip
 ```
 
 <table>
@@ -21,8 +21,12 @@ bin/plugin -i computed-fields -u https://github.com/SkillPages/elasticsearch-com
 			<td>master</td>
 		</tr>
 		<tr>
+			<td>0.0.5</td>
+			<td>1.2.*</td>
+		</tr>
+		<tr>
 			<td>0.0.4</td>
-			<td>1.0.0, 1.1.0
+			<td>1.0.0, 1.1.0</td>
 		</tr>
 		<tr>
 			<td>0.0.3</td>

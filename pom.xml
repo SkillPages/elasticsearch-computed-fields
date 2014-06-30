@@ -14,8 +14,8 @@
 	
 	<properties> 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>1.1.0</elasticsearch.version>
-		<java.version>1.6</java.version>
+		<elasticsearch.version>1.2.1</elasticsearch.version>
+		<java.version>1.7</java.version>
 	</properties>
 
 	<licenses>
@@ -25,18 +25,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
-	<scm>
-		<connection>
-			scm:git:git@github.com:SkillPages/elasticsearch-computed-fields.git
-		</connection>
-		<developerConnection>
-			scm:git:git@github.com:SkillPages/elasticsearch-computed-fields.git
-		</developerConnection>
-		<url>
-			https://github.com/SkillPages/elasticsearch-computed-fields
-		</url>
-	</scm>
 	
 	<developers>
 		<developer>
@@ -45,7 +33,6 @@
 			<url>https://github.com/karol-gwaj</url>
 		</developer>
 	</developers>
-
 
 	<build>
 		<plugins>
@@ -70,21 +57,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-<!-- 		<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
--->			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -115,6 +87,13 @@
 			<artifactId>elasticsearch</artifactId>
 			<version>${elasticsearch.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 </project>
