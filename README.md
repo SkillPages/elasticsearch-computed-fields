@@ -1,5 +1,11 @@
-Computed fields plugin for ElasticSearch 
+[[deprecated](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-transform.html)] Computed fields plugin for ElasticSearch
 ===========================================
+
+#### elasticsearch (as of version 1.3) supports mapping transforms: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-transform.html, which can do pretty much this same
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 The computed fields plugin adds support for indexing computed(scripted) fields
 
